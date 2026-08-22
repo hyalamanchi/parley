@@ -1,0 +1,13 @@
+# Core — required
+anthropic>=0.40.0
+
+# Voice I/O — optional. The bot runs in --text mode without these.
+# TTS (offline, cross-platform):
+pyttsx3>=2.90
+# STT (needs internet for Google's free recognizer):
+SpeechRecognition>=3.10.0
+# Microphone access for SpeechRecognition. On macOS: `brew install portaudio` first.
+PyAudio>=0.2.13
+
+# Optional convenience: load a local .env file automatically.
+python-dotenv>=1.0.0
