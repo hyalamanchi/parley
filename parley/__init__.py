@@ -1,4 +1,4 @@
-"""Claude Voice Bot — a small, hackable voice assistant powered by the Claude API.
+"""Parley — a small, hackable voice assistant powered by the Claude API.
 
 Default brain is Claude; an optional free local brain (Ollama) is available via
 `make_brain("ollama")` or `--provider ollama`.

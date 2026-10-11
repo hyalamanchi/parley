@@ -1,13 +1,13 @@
 # Sample conversation
 
-A real transcript from `python -m voicebot --text` (model: `claude-opus-5`).
+A real transcript from `python -m parley --text` (model: `claude-opus-5`).
 Notice the replies stay short and speakable — no markdown, no lists.
 
 ```
-🤖 Claude Voice Bot — model: claude-opus-5
+🤖 Parley — provider: claude, model: claude-opus-5
    Say or type something. Say 'quit' to exit, 'reset' to start over.
 
-Bot: Hi! I'm your Claude voice assistant. What can I help you with?
+Bot: Hi! I'm Parley, your voice assistant, powered by Claude. What can I help you with?
 You: I'm nervous about a coding interview tomorrow. Any quick advice?
 Bot: Totally normal to feel that way. Two things: talk through your thinking out
      loud so they see how you reason, and if you get stuck, say what you'd try

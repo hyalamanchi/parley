@@ -8,7 +8,7 @@ API key, works offline once a model is pulled.
 Setup:
     1. Install Ollama:   https://ollama.com  (or `brew install ollama`)
     2. Pull a model:     ollama pull llama3.2
-    3. Run the bot:      python -m voicebot --provider ollama --text
+    3. Run the bot:      python -m parley --provider ollama --text
 """
 from __future__ import annotations
 

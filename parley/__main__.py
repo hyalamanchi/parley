@@ -1,4 +1,4 @@
-"""Entry point: `python -m voicebot`.
+"""Entry point: `python -m parley`.
 
 Runs a conversational loop. Voice mode by default; `--text` types instead of
 speaking (handy when you have no mic, or for a quick demo).
@@ -47,13 +47,13 @@ def run(text_mode: bool, voice_out: bool, provider: str, model: str | None) -> i
         print(f"⚠️  {exc}", file=sys.stderr)
         return 1
 
-    print(f"🤖 Claude Voice Bot — provider: {provider}, model: {brain.model}")
+    print(f"🤖 Parley — provider: {provider}, model: {brain.model}")
     print("   Say or type something. Say 'quit' to exit, 'reset' to start over.\n")
 
     if provider == "ollama":
-        greeting = f"Hi! I'm your local voice assistant ({brain.model}). What can I help you with?"
+        greeting = f"Hi! I'm Parley, your voice assistant (local model: {brain.model}). What can I help you with?"
     else:
-        greeting = "Hi! I'm your Claude voice assistant. What can I help you with?"
+        greeting = "Hi! I'm Parley, your voice assistant, powered by Claude. What can I help you with?"
     print(f"Bot: {greeting}")
     if voice_out:
         speak(greeting)
@@ -101,7 +101,7 @@ def run(text_mode: bool, voice_out: bool, provider: str, model: str | None) -> i
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        prog="voicebot", description="A voice assistant powered by Claude."
+        prog="parley", description="Parley — a voice assistant (Claude by default, or a free local model)."
     )
     parser.add_argument(
         "--text", action="store_true",

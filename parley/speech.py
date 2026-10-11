@@ -3,7 +3,7 @@
 Both are optional. If the audio libraries aren't installed, the bot still runs in
 `--text` mode — so anyone can try it (including a recruiter clicking through) without
 setting up a microphone. The heavy imports happen lazily inside the functions so
-`import voicebot` never fails just because PyAudio isn't present.
+`import parley` never fails just because PyAudio isn't present.
 """
 from __future__ import annotations
 
