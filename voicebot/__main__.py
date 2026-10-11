@@ -50,7 +50,10 @@ def run(text_mode: bool, voice_out: bool, provider: str, model: str | None) -> i
     print(f"🤖 Claude Voice Bot — provider: {provider}, model: {brain.model}")
     print("   Say or type something. Say 'quit' to exit, 'reset' to start over.\n")
 
-    greeting = "Hi! I'm your Claude voice assistant. What can I help you with?"
+    if provider == "ollama":
+        greeting = f"Hi! I'm your local voice assistant ({brain.model}). What can I help you with?"
+    else:
+        greeting = "Hi! I'm your Claude voice assistant. What can I help you with?"
     print(f"Bot: {greeting}")
     if voice_out:
         speak(greeting)
