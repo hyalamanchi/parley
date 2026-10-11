@@ -1,5 +1,9 @@
-"""Claude Voice Bot — a small, hackable voice assistant powered by the Claude API."""
-from .brain import Brain
+"""Claude Voice Bot — a small, hackable voice assistant powered by the Claude API.
 
-__all__ = ["Brain"]
-__version__ = "0.1.0"
+Default brain is Claude; an optional free local brain (Ollama) is available via
+`make_brain("ollama")` or `--provider ollama`.
+"""
+from .brain import Brain, ClaudeBrain, make_brain
+
+__all__ = ["Brain", "ClaudeBrain", "make_brain"]
+__version__ = "0.2.0"

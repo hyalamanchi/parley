@@ -77,6 +77,23 @@ python -m voicebot --text
 > `pip install PyAudio`. If you'd rather skip audio entirely, `--text` mode only needs
 > the `anthropic` package.
 
+### No API key? Run it free, locally, with Ollama
+
+The default brain is Claude. If you'd rather not use an API key, the bot also runs on a
+**free local model** via [Ollama](https://ollama.com) — no key, works offline:
+
+```bash
+# 1. install Ollama (https://ollama.com) or: brew install ollama
+# 2. pull a small model
+ollama pull llama3.2
+# 3. run the bot on the local brain
+python -m voicebot --provider ollama --text
+```
+
+Claude stays the default and the showcased backend; Ollama is there for free local
+testing and offline use. Pick a backend with `--provider claude|ollama`, or set
+`VOICEBOT_PROVIDER` in your `.env`.
+
 ---
 
 ## Usage
@@ -86,6 +103,7 @@ python -m voicebot --text
 | `python -m voicebot` | Voice in, voice out |
 | `python -m voicebot --text` | Type in, text out (no mic needed) |
 | `python -m voicebot --no-speak` | Voice in, text out |
+| `python -m voicebot --provider ollama --text` | Free local brain (no API key) |
 
 In-conversation, say or type **"reset"** to start a new conversation, or **"quit"** to exit.
 

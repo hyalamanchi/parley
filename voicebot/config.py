@@ -23,8 +23,29 @@ SYSTEM_PROMPT = (
 )
 
 
+# Which brain powers the bot: "claude" (default, needs an API key) or
+# "ollama" (a free model running locally — no key, works offline).
+DEFAULT_PROVIDER = "claude"
+
+# Local Ollama defaults (used only when provider == "ollama").
+DEFAULT_OLLAMA_MODEL = "llama3.2"
+DEFAULT_OLLAMA_HOST = "http://localhost:11434"
+
+
+def get_provider() -> str:
+    return os.environ.get("VOICEBOT_PROVIDER", DEFAULT_PROVIDER).lower()
+
+
 def get_model() -> str:
     return os.environ.get("ANTHROPIC_MODEL", DEFAULT_MODEL)
+
+
+def get_ollama_model() -> str:
+    return os.environ.get("VOICEBOT_OLLAMA_MODEL", DEFAULT_OLLAMA_MODEL)
+
+
+def get_ollama_host() -> str:
+    return os.environ.get("OLLAMA_HOST", DEFAULT_OLLAMA_HOST)
 
 
 def get_max_tokens() -> int:

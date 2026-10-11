@@ -1,23 +1,35 @@
-"""The conversational brain: a thin, stateful wrapper over the Claude Messages API.
+"""The conversational brain(s).
 
-The Messages API is stateless, so we keep the running transcript in `self.messages`
-and resend it every turn. Claude supplies the intelligence; this class just manages
-history and turns the response into a plain string the voice layer can speak.
+Two interchangeable backends with the same interface (`.reply()`, `.reset()`,
+`.messages`, `.model`):
+
+- `ClaudeBrain` — the default, powered by the Claude API (needs an API key).
+- `OllamaBrain` — a free local model via Ollama (see ollama_brain.py).
+
+`make_brain()` picks one based on the provider. The Anthropic import is lazy, so
+someone running only the Ollama backend doesn't need the `anthropic` package installed.
 """
 from __future__ import annotations
-
-import anthropic
 
 from . import config
 
 
-class Brain:
+class ClaudeBrain:
+    """Stateful wrapper over the Claude Messages API.
+
+    The Messages API is stateless, so we keep the running transcript in
+    `self.messages` and resend it every turn.
+    """
+
     def __init__(
         self,
-        client: anthropic.Anthropic | None = None,
+        client=None,
         model: str | None = None,
         system: str | None = None,
     ) -> None:
+        import anthropic  # lazy: only needed for the Claude backend
+
+        self._anthropic = anthropic
         # Zero-arg client resolves credentials from the environment
         # (ANTHROPIC_API_KEY / ANTHROPIC_AUTH_TOKEN / an `ant auth login` profile).
         self.client = client or anthropic.Anthropic()
@@ -27,6 +39,7 @@ class Brain:
 
     def reply(self, user_text: str) -> str:
         """Send one user turn, append the reply to history, and return it as text."""
+        anthropic = self._anthropic
         self.messages.append({"role": "user", "content": user_text})
 
         try:
@@ -62,3 +75,23 @@ class Brain:
     def reset(self) -> None:
         """Forget the conversation and start fresh."""
         self.messages.clear()
+
+
+# Backward-compatible alias — ClaudeBrain is the original/default brain.
+Brain = ClaudeBrain
+
+
+def make_brain(
+    provider: str | None = None,
+    model: str | None = None,
+    system: str | None = None,
+):
+    """Return the right brain for the chosen provider ('claude' or 'ollama')."""
+    provider = (provider or config.get_provider()).lower()
+    if provider == "ollama":
+        from .ollama_brain import OllamaBrain
+
+        return OllamaBrain(model=model, system=system)
+    if provider == "claude":
+        return ClaudeBrain(model=model, system=system)
+    raise ValueError(f"Unknown provider: {provider!r} (use 'claude' or 'ollama')")
