@@ -106,8 +106,11 @@ def listen(timeout: float = 8.0, phrase_time_limit: float = 15.0) -> str:
             "microphone permission, or run with --text to type instead."
         ) from exc
 
+    # Recognition language (BCP-47). Default US English; set VOICEBOT_STT_LANG=en-IN
+    # (or en-GB, en-AU, …) to better match your accent.
+    lang = os.environ.get("VOICEBOT_STT_LANG", "en-US")
     try:
-        return recognizer.recognize_google(audio)
+        return recognizer.recognize_google(audio, language=lang)
     except sr.UnknownValueError:
         return ""  # heard nothing intelligible — caller re-prompts
     except sr.RequestError as exc:
