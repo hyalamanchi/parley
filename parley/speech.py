@@ -17,18 +17,16 @@ _FEMALE_VOICES = [
     "victoria", "karen", "moira", "tessa", "fiona", "female",
 ]
 
-_engine = None  # cached so we don't rebuild it (and re-pick the voice) every turn
-
-
 class SpeechUnavailable(RuntimeError):
     """Raised when an audio backend isn't installed, with an install hint."""
 
 
 def _configure_voice(engine) -> None:
-    """Pick a female voice and a pleasant speaking rate. Overridable via env:
+    """Pick a female voice and a lively speaking rate. Overridable via env:
     VOICEBOT_VOICE (name/id substring) and VOICEBOT_RATE (words per minute)."""
     try:
-        engine.setProperty("rate", int(os.environ.get("VOICEBOT_RATE", "178")))
+        engine.setProperty("rate", int(os.environ.get("VOICEBOT_RATE", "188")))
+        engine.setProperty("volume", 1.0)  # full volume = more present, less flat
     except Exception:
         pass
 
@@ -55,17 +53,23 @@ def _configure_voice(engine) -> None:
 
 
 def speak(text: str) -> None:
-    """Read text aloud with the offline pyttsx3 engine. Falls back silently if absent."""
-    global _engine
+    """Read text aloud with the offline pyttsx3 engine. Falls back silently if absent.
+
+    A fresh engine per call — reusing one across turns makes macOS speak only the
+    first line and then go silent.
+    """
     try:
         import pyttsx3
     except ImportError:
         return  # no TTS installed — caller still prints the text
-    if _engine is None:
-        _engine = pyttsx3.init()
-        _configure_voice(_engine)
-    _engine.say(text)
-    _engine.runAndWait()
+    engine = pyttsx3.init()
+    _configure_voice(engine)
+    engine.say(text)
+    engine.runAndWait()
+    try:
+        engine.stop()
+    except Exception:
+        pass
 
 
 def listen(timeout: float = 8.0, phrase_time_limit: float = 15.0) -> str:
