@@ -65,3 +65,11 @@ def listen(timeout: float = 8.0, phrase_time_limit: float = 15.0) -> str:
         raise SpeechUnavailable(
             f"Speech-to-text service error: {exc}. Try again or use --text."
         ) from exc
+    except (FileNotFoundError, OSError) as exc:
+        # Google STT converts audio to FLAC via a 'flac' binary. If it's missing
+        # (common on macOS), the conversion subprocess fails here.
+        raise SpeechUnavailable(
+            "Speech-to-text needs the 'flac' encoder, which isn't installed.\n"
+            "  Install it:  brew install flac\n"
+            "Then run voice mode again — or use --text in the meantime."
+        ) from exc
