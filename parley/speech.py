@@ -7,20 +7,65 @@ setting up a microphone. The heavy imports happen lazily inside the functions so
 """
 from __future__ import annotations
 
+import os
+
+# Female voices to prefer, best-sounding first. macOS "Enhanced"/"Premium" voices
+# (download them in System Settings > Accessibility > Spoken Content > System Voice)
+# sound far nicer than the default compact ones — if installed, they're picked here.
+_FEMALE_VOICES = [
+    "ava", "allison", "samantha", "susan", "zoe", "serena",
+    "victoria", "karen", "moira", "tessa", "fiona", "female",
+]
+
+_engine = None  # cached so we don't rebuild it (and re-pick the voice) every turn
+
 
 class SpeechUnavailable(RuntimeError):
     """Raised when an audio backend isn't installed, with an install hint."""
 
 
+def _configure_voice(engine) -> None:
+    """Pick a female voice and a pleasant speaking rate. Overridable via env:
+    VOICEBOT_VOICE (name/id substring) and VOICEBOT_RATE (words per minute)."""
+    try:
+        engine.setProperty("rate", int(os.environ.get("VOICEBOT_RATE", "178")))
+    except Exception:
+        pass
+
+    voices = engine.getProperty("voices") or []
+    want = os.environ.get("VOICEBOT_VOICE", "").lower().strip()
+    order = [want] if want else _FEMALE_VOICES
+
+    def blob(v):
+        return ((getattr(v, "id", "") or "") + " " + (getattr(v, "name", "") or "")).lower()
+
+    # Pass 1: prefer a higher-quality "enhanced"/"premium" female voice.
+    # Pass 2: fall back to any matching female voice (e.g. the built-in compact one).
+    for quality_only in (True, False):
+        for needle in order:
+            if not needle:
+                continue
+            for v in voices:
+                b = blob(v)
+                if quality_only and "premium" not in b and "enhanced" not in b:
+                    continue
+                if needle in b:
+                    engine.setProperty("voice", v.id)
+                    return
+
+
 def speak(text: str) -> None:
     """Read text aloud with the offline pyttsx3 engine. Falls back silently if absent."""
+    global _engine
     try:
         import pyttsx3
     except ImportError:
         return  # no TTS installed — caller still prints the text
-    engine = pyttsx3.init()
-    engine.say(text)
-    engine.runAndWait()
+    if _engine is None:
+        _engine = pyttsx3.init()
+        _configure_voice(_engine)
+    _engine.say(text)
+    _engine.runAndWait()
 
 
 def listen(timeout: float = 8.0, phrase_time_limit: float = 15.0) -> str:
