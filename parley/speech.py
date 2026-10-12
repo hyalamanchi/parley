@@ -46,9 +46,15 @@ def listen(timeout: float = 8.0, phrase_time_limit: float = 15.0) -> str:
             audio = recognizer.listen(
                 source, timeout=timeout, phrase_time_limit=phrase_time_limit
             )
+    except sr.WaitTimeoutError:
+        # No speech detected in time — not an error; let the caller re-prompt.
+        # If this keeps happening, the mic usually lacks permission (macOS:
+        # System Settings > Privacy & Security > Microphone > enable your terminal).
+        return ""
     except (OSError, AttributeError) as exc:
         raise SpeechUnavailable(
-            "No working microphone was found. Run with --text to type instead."
+            "No working microphone was found. Check that your terminal has "
+            "microphone permission, or run with --text to type instead."
         ) from exc
 
     try:
